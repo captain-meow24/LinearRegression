@@ -3,7 +3,7 @@ project(LinearRegression)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(LinearRegression main.cpp
+add_executable(LinearRegression
         example.cpp
         LinearRegressor.h
         LinearRegressor.cpp)
