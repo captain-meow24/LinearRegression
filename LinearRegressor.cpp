@@ -6,13 +6,13 @@
 
 double LinearRegression::MSE(vector<double> pred, vector<double> actual) {
     int num = pred.size();
-    double error;
+    double error =0;
     for (int i=0;i<num;i++) {
-        int err = actual[i] - pred[i];
+        double err = actual[i] - pred[i];
         err *= err;
         error +=err;
     }
-    return error;
+    return error/(2.0 * num);
 }
 
 LinearRegression::LinearRegression(vector<vector<double> > input, vector<double> actual_val) {
@@ -23,9 +23,19 @@ LinearRegression::LinearRegression(vector<vector<double> > input, vector<double>
     double bias  = 0.0;
     pair<vector<double>, double> result;
     result = gradient_descent(learn_rate, epochs, input, actual_val);
-    get_features();
+    get_features(n);
     for (int i=0;i<n;i++) {
         predicted_val += result.first[i] * input_features[i];
     }
-    predicted_val += bias;
+    predicted_val += result.second;
 }
+
+void LinearRegression::get_features(int n) {
+    cout<< "Enter values for predicton "<<endl;
+    for (int i=0;i<n;i++) {
+        double val;
+        cin>>val;
+        input_features.push_back(val);
+    }
+}
+

@@ -16,7 +16,7 @@ public:
     double MSE(vector<double> pred, vector<double> actual);
     pair<vector<double>,double> gradient_descent(double learn_rate, int epochs, vector<vector<double>> input, vector<double> act_v);
     double predicted_val = 0;
-    void get_features();
+    void get_features(int n);
 };
 
 #endif //LINEARREGRESSOR_H
