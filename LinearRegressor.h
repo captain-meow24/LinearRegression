@@ -5,18 +5,37 @@
 #ifndef LINEARREGRESSOR_H
 #define LINEARREGRESSOR_H
 
-#include<iostream>
-#include<vector>
+#include <vector>
+#include <iostream>
 using namespace std;
 
-class LinearRegression {
-    vector<double> input_features;  //these are the features we are predicting for
+// a class for Loss functions
+class LossFunction{
 public:
-    LinearRegression(vector<vector<double>>& input, vector<double>& actual_val);
-    double find_error(double pred, double actual);
-    pair<vector<double>,double> gradient_descent(double learn_rate, int epochs, vector<vector<double>>& input, vector<double>& act_v, vector<double>& w, double b);
-    double predicted_val = 0;
-    void get_features(int n);
+    double MSE(vector<double> pred, vector<double> actual);   //calculates the mean squared error
 };
+
+pair<vector<double>,double> Gradient_Descent(vector<vector<double>> x, vector<double> y, double alpha, int epochs);
+//this is the main function that updates the weights and bias values to most accurate
+
+// The Linear Regressor
+class LinearRegressor {
+public:
+    int epoch = 0;   //number of iterations over one data set
+    double alpha = 0;   //learning rate
+    vector<double> weights;   //weight of each feature
+    double bias = 0;
+    int features;  //number of features
+
+    // Default epochs = 1000
+    // Default learning_rate = 0.0001
+    LinearRegressor(double learning_rate=0.0001 , int epoch=1000);  //constructor that sets the values of epoochs and alpha to default
+    void train(vector<vector<double>> x, vector<double> y);
+    vector<double> predict(vector<vector<double>> x, vector<double> pred);   //predicts the value based on most accurate weights and bias
+
+private:
+    double gettingValues(vector<double> x);
+};
+
 
 #endif //LINEARREGRESSOR_H
