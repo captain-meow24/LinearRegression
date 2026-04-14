@@ -10,10 +10,13 @@
 using namespace std;
 
 class LinearRegression {
+    vector<double> input_features;  //these are the features we are predicting for
 public:
     LinearRegression(vector<vector<double>> input, vector<double> actual_val);
     double MSE(vector<double> pred, vector<double> actual);
-    pair<vector<double>,double> gradient_descent(double learn_rate, int epoch, vector<vector<double>> input, vector<double> act_v);
+    pair<vector<double>,double> gradient_descent(double learn_rate, int epochs, vector<vector<double>> input, vector<double> act_v);
+    double predicted_val = 0;
+    void get_features();
 };
 
 #endif //LINEARREGRESSOR_H
