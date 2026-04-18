@@ -5,11 +5,11 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
-#include <immintrin.h>
 using namespace std;
 
 
 double LossFunction::MSE(vector<double> pred, vector<double> actual){
+
     // m stores number of datapoints
     double m = actual.size();
     // Initializing the loss
@@ -21,7 +21,10 @@ double LossFunction::MSE(vector<double> pred, vector<double> actual){
     }
     double FinalLoss = loss/(2*m);
     return FinalLoss;
+
 }
+
+
 // this function minimizes the error and finds the best weights and bias.
 //Takes in x, y, number of datapoints, number of features and the learning rate and the number of epochs
 
@@ -36,40 +39,16 @@ pair<vector<double>,double> Gradient_Descent(vector<vector<double>> x, vector<do
         //Setting the updated weight and updated bias to 0 after every iteration because we find fresh error each iteration and dont want any redundant value
         double updated_bias = 0;
         vector<double> updated_weights(n, 0.0);
-        // Loop for adint n = x[0].size();ding the derived error for all the datapoints
+        // Loop for adding the derivated error for all the datapoints
         for (int i=0; i<m; i++){
             // Calculating error
-            __m256d sum = _mm256_setzero_pd();    //vector variable initialised to zero, contains 4 doubles at a time
-            int k = 0;
-            for (; k + 3 < n; k += 4){
-                __m256d w_vec = _mm256_loadu_pd(&weights[k]);   //loads 4 weights
-                __m256d x_vec = _mm256_loadu_pd(&x[i][k]);     //loads 4 features
-                __m256d prod = _mm256_mul_pd(w_vec, x_vec);   //multiplying them
-                sum = _mm256_add_pd(sum, prod);   //adding the product to sum
-            }
-            double temp[4];
-            _mm256_storeu_pd(temp, sum);  //loading it back to scalar
-            double prediction = temp[0] + temp[1] + temp[2] + temp[3];
-            // remainder loop (for elements not divisible by 4)
-            for (; k < n; k++){
+            double prediction = bias;
+            for (int k=0; k<n; k++){
                 prediction += weights[k] * x[i][k];
             }
-            prediction += bias;
             double error = y[i] - prediction;
             // Derivation
-            __m256d err_vec = _mm256_set1_pd(-(1.0/m) * error);
-            k = 0;
-            for (; k + 3 < n; k += 4){
-                __m256d x_vec = _mm256_loadu_pd(&x[i][k]);
-                __m256d uw_vec = _mm256_loadu_pd(&updated_weights[k]);
-
-                __m256d mul = _mm256_mul_pd(x_vec, err_vec);
-                uw_vec = _mm256_add_pd(uw_vec, mul);
-
-                _mm256_storeu_pd(&updated_weights[k], uw_vec);
-            }
-            // remainder
-            for (; k < n; k++){
+            for (int k=0; k<n; k++){
                 updated_weights[k] += -(1.0/m)*(x[i][k])*error;  //this is a derivation of MSE with respect to weights
                 //this will give the direction and rate at which the error will change with respect to weights
             }
@@ -112,7 +91,7 @@ vector<double> LinearRegressor::predict(vector<vector<double>> x, vector<double>
     }
     return pred;   //the vector that contains all predicted values;
 }
-                                                                                                                                                                                    
+
 // Used to predict a single y value for x
 double LinearRegressor::gettingValues(vector<double> x){
     // Initialized y as bias so that the bias is already added to the target
