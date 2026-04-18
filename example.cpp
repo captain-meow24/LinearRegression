@@ -41,7 +41,7 @@ int main() {
     // Printing the predicted value alongside actual value for comparison
     cout<<"Predicted Value\t\t"<<"Actual Value"<<endl;
     for(int i = 0; i<y_test.size(); i++){
-        cout<<pred.at(i)<<"\t\t\t\t";
+        cout<<pred.at(i)<<"\t\t\t";
         cout<<(y_test.at(i))<<endl;
     }
 
