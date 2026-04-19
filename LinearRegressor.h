@@ -12,14 +12,14 @@ We calculate the new weights and bias such that-
 
 #include<iostream>
 #include <vector>
+using namespace std;
 
 class LinearRegressor {
 public:
+   vector<double> weights;
+   double bias = 0.0;
    double learning_rate = 0.0;
    int epochs = 0;
-   LinearRegressor(int epochs = 1000, double learning_rate = 0.01) {
-      this->learning_rate = learning_rate;
-      this->epochs = epochs;
-   }
-   
+   LinearRegressor(int epochs = 1000, double learning_rate = 0.01);
+   void gradient_descent(vector<vector<double>> x_train, vector<double> y_train);
 };
