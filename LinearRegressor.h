@@ -21,5 +21,5 @@ public:
    double learning_rate = 0.0;
    int epochs = 0;
    LinearRegressor(int epochs = 1000, double learning_rate = 0.01);
-   void gradient_descent(vector<vector<double>> x_train, vector<double> y_train);
+   void gradient_descent(vector<vector<double>>& x_train, vector<double>& y_train);
 };

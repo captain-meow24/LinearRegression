@@ -5,7 +5,7 @@ LinearRegressor::LinearRegressor(int epoch, double learning) {
     epochs = epoch;
 }
 
-void LinearRegressor::gradient_descent(vector<vector<double>> x_train, vector<double> y_train) {
+void LinearRegressor::gradient_descent(vector<vector<double>>& x_train, vector<double>& y_train) {
     int col = x_train[0].size();
     weights.resize(col, 0.0);
     for (int e =0; e<epochs; e++) {
@@ -15,8 +15,11 @@ void LinearRegressor::gradient_descent(vector<vector<double>> x_train, vector<do
             for (int c=0; c<col; c++) {
                 prediction += weights[c]* x_train[r][c];
             }
-            double error = y_train[r] - prediction;
-            
+            double error = prediction - y_train[r];
+            for (int c=0; c<col;c++) {
+                weights[c] -= learning_rate * (error) * x_train[r][c];
+            }
+            bias -= learning_rate * error;
         }
     }
 }
