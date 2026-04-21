@@ -8,8 +8,8 @@ LinearRegressor::LinearRegressor(int epoch, double learning) {
 void LinearRegressor::gradient_descent(vector<vector<double>>& x_train, vector<double>& y_train) {
     int col = x_train[0].size();
     weights.resize(col, 0.0);
+    int row = x_train.size();
     for (int e =0; e<epochs; e++) {
-        int row = x_train.size();
         for (int r=0; r<row; r++) {
             double prediction = bias;     //since y = w*x + b
             for (int c=0; c<col; c++) {
@@ -24,10 +24,27 @@ void LinearRegressor::gradient_descent(vector<vector<double>>& x_train, vector<d
     }
 }
 
-double LinearRegressor::predict(vector<double> x_target) {
+double LinearRegressor::predict(vector<double>& x_target) {
     double y = bias;
     for (int i =0; i<x_target.size(); i++) {
         y += weights[i]*x_target[i];
     }
     return y;
 }
+double LinearRegressor::MSE(double target, double pred) {
+    double mse = target - pred;
+    mse *= mse;
+    return mse;
+}
+
+double LinearRegressor::accuracy(vector<vector<double> > &x_test, vector<double> &y_test) {
+    double error = 0.0;
+    double diff = 0.0;
+    int samples = y_test.size();
+    for (int i=0; i<x_test.size(); i++){
+        diff = predict(x_test[i]);
+        error += MSE(y_test[i], diff);
+    }
+    return error/samples;
+}
+

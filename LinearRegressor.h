@@ -10,7 +10,6 @@ We calculate the new weights and bias such that-
    iterate through the each row and then iterate through the whole table as many times as there are number of epochs
 */
 
-#include<iostream>
 #include <vector>
 using namespace std;
 
@@ -22,5 +21,7 @@ public:
    int epochs = 0;
    LinearRegressor(int epochs = 1000, double learning_rate = 0.01);
    void gradient_descent(vector<vector<double>>& x_train, vector<double>& y_train);
-   double predict(vector<double> x_target);
+   double predict(vector<double>& x_target);
+   double MSE(double target, double pred);
+   double accuracy(vector<vector<double>>& x_test, vector<double>& y_test);
 };
