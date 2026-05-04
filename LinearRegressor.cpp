@@ -1,4 +1,5 @@
 #include"LinearRegressor.h"
+#include<riscv_vector.h>
 
 LinearRegressor::LinearRegressor(int epoch, double learning) {
     learning_rate = learning;
@@ -9,14 +10,17 @@ void LinearRegressor::gradient_descent(vector<vector<double>>& x_train, vector<d
     int col = x_train[0].size();
     weights.resize(col, 0.0);
     int row = x_train.size();
-    for (int e =0; e<epochs; e++) {
+    for (int e = 0; e<epochs; e++) {
         for (int r=0; r<row; r++) {
             double prediction = bias;     //since y = w*x + b
+            /*
+             vector support for processing 4 features at a time
+             */
             for (int c=0; c<col; c++) {
                 prediction += weights[c]* x_train[r][c];
             }
             double error = prediction - y_train[r];
-            for (int c=0; c<col;c++) {
+            for (int c=0; c<col;c++) {    //vector support here to change 4 weights at a time
                 weights[c] -= learning_rate * (error) * x_train[r][c];
             }
             bias -= learning_rate * error;
@@ -26,25 +30,43 @@ void LinearRegressor::gradient_descent(vector<vector<double>>& x_train, vector<d
 
 double LinearRegressor::predict(vector<double>& x_target) {
     double y = bias;
-    for (int i =0; i<x_target.size(); i++) {
+    for (int i =0; i<x_target.size(); i++) {  //vector support here to multiply multiple weights with their target x at a time
         y += weights[i]*x_target[i];
     }
     return y;
 }
-double LinearRegressor::MSE(double target, double pred) {
-    double mse = target - pred;
-    mse *= mse;
-    return mse;
+double LinearRegressor::MSE(vector<double> &predicted, vector<double> &y_test) {
+    //perform vector subtraction
+    double mse = 0;
+    int vecsize = predicted.size();
+    int i =0;
+    while (i<vecsize) {
+        size_t vl = __riscv_vsetvl_e64m1(vecsize-i);
+        vfloat64m1_t va = __riscv_vle64_v_f64m1(&predicted[i], vl);   //loading predicted into va
+        vfloat64m1_t vb = __riscv_vle64_v_f64m1(&y_test[i], vl);      //loading predicted into vb
+        vfloat64m1_t vdiff = __riscv_vfsub_vv_f64m1(va,vb,vl);     //calculating difference
+        vfloat64m1_t vsq = __riscv_vfmul_vv_f64m1(vdiff, vdiff, vl);
+        vfloat64m1_t vSum = __riscv_vfredusum_vs_f64m1_f64m1(
+           vdiff, __riscv_vfmv_v_f_f64m1(0.0, vl),  vl);     //when we add a and b, we do a = 0 + b,
+                                                      // so here we need a 0 vector that we could add to our diff to calculate the sum
+        double partial = __riscv_vfmv_f_s_f64m1_f64(vSum);
+
+        mse += partial;
+        i += vl;
+    }
+    return mse/vecsize;
 }
 
 double LinearRegressor::accuracy(vector<vector<double> > &x_test, vector<double> &y_test) {
     double error = 0.0;
     double diff = 0.0;
     int samples = y_test.size();
-    for (int i=0; i<x_test.size(); i++){
+    vector<double> predicted;
+    for (int i=0; i<x_test.size(); i++){ // optimize using vector instr
         diff = predict(x_test[i]);
-        error += MSE(y_test[i], diff);
+        predicted.push_back(diff);
     }
+    error = MSE(predicted, y_test);
     return error/samples;
 }
 

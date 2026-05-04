@@ -22,6 +22,6 @@ public:
    LinearRegressor(int epochs = 1000, double learning_rate = 0.01);
    void gradient_descent(vector<vector<double>>& x_train, vector<double>& y_train);
    double predict(vector<double>& x_target);
-   double MSE(double target, double pred);
+   double MSE(vector<double> &predicted, vector<double> &y_test);
    double accuracy(vector<vector<double>>& x_test, vector<double>& y_test);
 };
