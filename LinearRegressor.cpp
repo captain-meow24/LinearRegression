@@ -14,13 +14,25 @@ void LinearRegressor::gradient_descent(vector<vector<double>>& x_train, vector<d
         for (int r=0; r<row; r++) {
             double prediction = bias;     //since y = w*x + b
             /*
-             vector support for processing 4 features at a time
+             vector support for processing multiple features at a time
              */
-            for (int c=0; c<col; c++) {
+           /* for (int c=0; c<col; c++) {
                 prediction += weights[c]* x_train[r][c];
             }
+            */
+            int e =0;
+            while (e<col) {
+                size_t ee = __riscv_vsetvl_e64m1(col - e);
+                vfloat64m1_t va = __riscv_vle64_v_f64m1(&x_train[r][e], ee);   //loading features into va
+                vfloat64m1_t vb = __riscv_vle64_v_f64m1(&weights[e],ee);      //loading weights into vb
+                vfloat64m1_t vmul = __riscv_vfmul_vv_f64m1(va, vb, ee);    //multiplying the two vectors
+                vfloat64m1_t vsum = __riscv_vfredusum_vs_f64m1_f64m1(vmul, __riscv_vfmv_v_f_f64m1(0.0, ee),  ee);
+                double part = __riscv_vfmv_f_s_f64m1_f64(vsum);
+                prediction += part;
+                e +=ee;
+            }
             double error = prediction - y_train[r];
-            for (int c=0; c<col;c++) {    //vector support here to change 4 weights at a time
+            for (int c=0; c<col;c++) {    //vector support here to change multiple weights at a time
                 weights[c] -= learning_rate * (error) * x_train[r][c];
             }
             bias -= learning_rate * error;
@@ -30,9 +42,6 @@ void LinearRegressor::gradient_descent(vector<vector<double>>& x_train, vector<d
 
 double LinearRegressor::predict(vector<double>& x_target) {
     double y = bias;
-   // for (int i =0; i<x_target.size(); i++) {  //vector support here to multiply multiple weights with their target x at a time
-     //   y += weights[i]*x_target[i];
-   // }
     int h =0;
     size_t tr = x_target.size();
     while (h<tr) {
@@ -76,13 +85,12 @@ double LinearRegressor::MSE(vector<double> &predicted, vector<double> &y_test) {
 double LinearRegressor::accuracy(vector<vector<double> > &x_test, vector<double> &y_test) {
     double error = 0.0;
     double diff = 0.0;
-    int samples = y_test.size();
     vector<double> predicted;
-    for (int i=0; i<x_test.size(); i++){ // optimize using vector instr
+    for (int i=0; i<x_test.size(); i++){
         diff = predict(x_test[i]);
         predicted.push_back(diff);
     }
     error = MSE(predicted, y_test);
-    return error/samples;
+    return error;
 }
 
