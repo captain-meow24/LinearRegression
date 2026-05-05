@@ -1,1 +1,0 @@
-/home/kanishka/Downloads/riscv/bin/riscv64-unknown-linux-gnu-g++ CMakeFiles/example3.dir/example3.cpp.o CMakeFiles/example3.dir/LinearRegressor.cpp.o -o example3
