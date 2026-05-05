@@ -8,3 +8,5 @@ The model has to be trained on training data (in the form of vectors), the featu
 Use gradient_descent() to train the data
 predict() will output prediction for a given set of data (only after training has been performed)
 accuracy() will output avrage error, has to be provided testing data.
+
+# Example run ;
