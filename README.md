@@ -1,9 +1,9 @@
 This is a c++ based Library for Linear Regresson optimized using RISC-V vector instructions
 
-#How to use :
+# How to use :
 When in need of running a machine learning model (linear regression), just copy paste LinearRegression.h and LinearRegression.cpp to your project.
 
-#Uses :
+# Uses :
 The model has to be trained on training data (in the form of vectors), the features being a 2D matrix and the target being a single value for each row of data.
 Use gradient_descent() to train the data
 predict() will output prediction for a given set of data (only after training has been performed)
